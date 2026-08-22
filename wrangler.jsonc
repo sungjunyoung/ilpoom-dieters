@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "ilpoom-dieters",
-      "database_id": "REPLACE_ON_DEPLOY",
+      "database_id": "f4dcce1a-9056-47ea-8fed-e0214db39c70",
       "migrations_dir": "migrations"
     }
   ],
