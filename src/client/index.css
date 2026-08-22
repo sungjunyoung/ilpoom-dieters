@@ -1,0 +1,534 @@
+/* 일품 다이어트 — 모바일 전용 UI */
+:root {
+  --bg: #f8f6f2;
+  --card: #ffffff;
+  --ink: #2e2a24;
+  --muted: #8a8377;
+  --line: #eae4da;
+  --accent: #e0703c;
+  --accent-soft: #fbe9df;
+  --green: #34a06e;
+  --red: #d9534f;
+  --radius: 16px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  padding: 16px 16px calc(32px + env(safe-area-inset-bottom));
+}
+
+.page-loading {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* header */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  padding-top: calc(12px + env(safe-area-inset-top));
+  background: rgba(248, 246, 242, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-logo {
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.dday {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.dday-passed {
+  color: var(--muted);
+  background: var(--line);
+}
+
+.header-nav {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.header-link {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+/* common */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.card h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 20px 0 10px;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+}
+
+.btn-plain {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  padding: 0;
+}
+
+.link {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.link-danger {
+  color: var(--red);
+}
+
+.input {
+  width: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.field span {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.error {
+  color: var(--red);
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.success {
+  color: var(--green);
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--line);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 2px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.badge-me {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* login / setup */
+.login-page,
+.setup-page {
+  padding-top: 12vh;
+}
+
+.login-hero {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-hero h1 {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.login-hero p {
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.login-card h2 {
+  font-size: 16px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-user-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.login-user {
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 10px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.login-user:active {
+  border-color: var(--accent);
+}
+
+.login-user-admin {
+  grid-column: 1 / -1;
+  background: #faf8f4;
+}
+
+.input-pin {
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 6px;
+  margin-bottom: 12px;
+}
+
+.login-card .btn {
+  width: 100%;
+}
+
+/* dashboard */
+.quick-record-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.quick-record-row {
+  display: flex;
+  gap: 8px;
+}
+
+.quick-record-row .input {
+  flex: 1;
+}
+
+.member-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.member-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.member-name {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.member-current {
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.member-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.delta-down {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.delta-up {
+  color: var(--red);
+  font-weight: 700;
+}
+
+.progress {
+  height: 8px;
+  background: var(--line);
+  border-radius: 999px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #f0a06e, var(--accent));
+  border-radius: 999px;
+  transition: width 0.4s;
+}
+
+/* feed / comments */
+.feed-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.feed-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.feed-meta {
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.feed-meta a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.feed-content {
+  font-size: 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* profile */
+.profile-head h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.stat {
+  text-align: center;
+  background: #faf8f4;
+  border-radius: 12px;
+  padding: 10px 4px;
+}
+
+.stat-label {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.stat-goal {
+  color: var(--green);
+}
+
+.chart-wrap {
+  margin: 0 -6px;
+}
+
+.record-row {
+  display: flex;
+  gap: 8px;
+}
+
+.record-row .input[type="date"] {
+  flex: 1.3;
+  min-width: 0;
+}
+
+.record-row .input[type="number"],
+.record-row .input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.weight-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.weight-table td {
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.weight-table tr:last-child td {
+  border-bottom: none;
+}
+
+.weight-cell {
+  font-weight: 700;
+  text-align: right;
+}
+
+.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actions-cell .btn-plain {
+  margin-left: 12px;
+}
+
+.revisions-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.revisions-toggle h3 {
+  margin-bottom: 0;
+  color: var(--ink);
+}
+
+.revision-list {
+  list-style: none;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.revision-list li {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.revision-list li:last-child {
+  border-bottom: none;
+}
+
+.revision-date {
+  font-weight: 700;
+}
+
+.comment-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.comment-form .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-list {
+  margin-top: 4px;
+}
