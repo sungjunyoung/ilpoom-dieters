@@ -28,7 +28,7 @@ export default function Header() {
   return (
     <header className="header">
       <Link to="/" className="header-logo">
-        일품 다이어트
+        일품 다이어터
       </Link>
       <span className={`dday ${d >= 0 ? "" : "dday-passed"}`}>
         {d > 0 ? `D-${d}` : d === 0 ? "D-DAY" : `종료 +${-d}일`}

@@ -46,8 +46,12 @@ export default function SetupPage() {
   return (
     <div className="setup-page">
       <div className="login-hero">
-        <h1>처음 오셨네요, {me.name}님 👋</h1>
-        <p>{me.isAdmin ? "새 패스워드를 설정해 주세요." : "PIN 번호를 새로 정해 주세요."}</p>
+        <h1>{me.name}님, 환영합니다</h1>
+        <p>
+          {me.isAdmin
+            ? "새 패스워드를 설정해 주십시오."
+            : "PIN 번호를 새로 설정해 주십시오."}
+        </p>
       </div>
       <form className="login-card" onSubmit={onSubmit}>
         <label className="field">
@@ -77,7 +81,7 @@ export default function SetupPage() {
         {needsWeights && (
           <>
             <label className="field">
-              <span>현재 몸무게 (kg)</span>
+              <span>현재 몸무게(kg)</span>
               <input
                 className="input"
                 type="number"
@@ -91,7 +95,7 @@ export default function SetupPage() {
               />
             </label>
             <label className="field">
-              <span>목표 몸무게 (kg)</span>
+              <span>목표 몸무게(kg)</span>
               <input
                 className="input"
                 type="number"
@@ -109,7 +113,7 @@ export default function SetupPage() {
 
         {error && <p className="error">{error}</p>}
         <button className="btn btn-primary" disabled={busy || pin1.length < 4}>
-          {busy ? "저장 중…" : "시작하기"}
+          {busy ? "저장 중" : "시작하기"}
         </button>
       </form>
     </div>

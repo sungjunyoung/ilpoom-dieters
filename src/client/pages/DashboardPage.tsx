@@ -11,6 +11,11 @@ function progressPercent(m: MemberSummary): number | null {
   return Math.max(0, Math.min(100, ((m.startWeight - m.currentWeight) / total) * 100));
 }
 
+// 운영 수칙 1번: 목표 체중은 미만 기준으로 적용한다
+function isAchieved(m: MemberSummary): boolean {
+  return m.goalWeight != null && m.currentWeight != null && m.currentWeight < m.goalWeight;
+}
+
 export default function DashboardPage() {
   const { me } = useAuth();
   const [members, setMembers] = useState<MemberSummary[]>([]);
@@ -35,7 +40,7 @@ export default function DashboardPage() {
     setMessage("");
     try {
       await api.saveWeight(todayKST(), parseFloat(weight));
-      setMessage("오늘 몸무게를 기록했어요! 💪");
+      setMessage("오늘 몸무게를 기록했습니다.");
       setWeight("");
       load();
     } catch (err) {
@@ -85,16 +90,17 @@ export default function DashboardPage() {
                 <span className="member-name">
                   {m.name}
                   {me?.id === m.id && <span className="badge badge-me">나</span>}
+                  {isAchieved(m) && <span className="badge badge-done">목표 달성</span>}
                 </span>
                 <span className="member-current">{formatKg(m.currentWeight)}</span>
               </div>
               {m.startWeight == null ? (
-                <p className="muted small">아직 시작 전이에요</p>
+                <p className="muted small">아직 기록이 없습니다.</p>
               ) : (
                 <>
                   <div className="member-sub">
                     <span>
-                      시작 {formatKg(m.startWeight)} → 목표 {formatKg(m.goalWeight)}
+                      시작 {formatKg(m.startWeight)} · 목표 {formatKg(m.goalWeight)}
                     </span>
                     {delta != null && (
                       <span className={delta <= 0 ? "delta-down" : "delta-up"}>
@@ -117,19 +123,19 @@ export default function DashboardPage() {
           );
         })}
         {members.length === 0 && (
-          <p className="muted">아직 멤버가 없어요. 어드민에게 등록을 요청하세요!</p>
+          <p className="muted">아직 멤버가 없습니다. 관리자에게 등록을 요청하십시오.</p>
         )}
       </div>
 
       {feed.length > 0 && (
         <>
-          <h2 className="section-title">최근 응원 멘트</h2>
+          <h2 className="section-title">최근 멘트</h2>
           <div className="card feed">
             {feed.map((c) => (
               <div className="feed-item" key={c.id}>
                 <div className="feed-meta">
                   <b>{c.fromName}</b> → <Link to={`/u/${c.toId}`}>{c.toName}</Link>
-                  <span className="muted small"> · {formatDateTime(c.createdAt)}</span>
+                  <span className="muted"> · {formatDateTime(c.createdAt)}</span>
                 </div>
                 <div className="feed-content">{c.content}</div>
               </div>

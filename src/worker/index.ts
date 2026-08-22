@@ -91,6 +91,67 @@ function todayKST(): string {
   return new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
 }
 
+function daysBetween(from: string, to: string): number {
+  return (
+    (new Date(`${to}T00:00:00Z`).getTime() - new Date(`${from}T00:00:00Z`).getTime()) /
+    86400000
+  );
+}
+
+// 운영 수칙 3번(인위적 수분 감량 제한)에 따라 하루 1kg을 초과하는 감량은 기록하지 않는다.
+const MAX_LOSS_PER_DAY = 1.0;
+const EPSILON = 1e-9;
+
+interface NeighborRow {
+  date: string;
+  weight: number;
+}
+
+// 앞뒤 기록과 비교해 하루 1kg 초과 감량이 되는지 검사한다. 위반이면 사유 문구를 돌려준다.
+async function checkLossRate(
+  c: AppContext,
+  userId: number,
+  date: string,
+  weight: number,
+): Promise<string | null> {
+  const [prev, next] = await Promise.all([
+    c.env.DB.prepare(
+      `SELECT date, weight FROM weights
+       WHERE user_id = ?1 AND date < ?2 ORDER BY date DESC LIMIT 1`,
+    )
+      .bind(userId, date)
+      .first<NeighborRow>(),
+    c.env.DB.prepare(
+      `SELECT date, weight FROM weights
+       WHERE user_id = ?1 AND date > ?2 ORDER BY date ASC LIMIT 1`,
+    )
+      .bind(userId, date)
+      .first<NeighborRow>(),
+  ]);
+
+  const violations: [NeighborRow, string, number, number][] = [];
+  if (prev) {
+    const days = daysBetween(prev.date, date);
+    violations.push([prev, "이전", days, prev.weight - weight]);
+  }
+  if (next) {
+    const days = daysBetween(date, next.date);
+    violations.push([next, "다음", days, weight - next.weight]);
+  }
+
+  for (const [row, label, days, loss] of violations) {
+    const limit = days * MAX_LOSS_PER_DAY;
+    if (loss > limit + EPSILON) {
+      return (
+        `하루 1kg을 초과하는 감량은 기록할 수 없습니다. ` +
+        `${label} 기록(${row.date} ${row.weight.toFixed(1)}kg)과 비교하면 ` +
+        `${days}일간 ${loss.toFixed(1)}kg 감량으로 계산됩니다.`
+      );
+    }
+  }
+  return null;
+}
+
 // ---------- auth ----------
 
 app.get("/login-users", async (c) => {
@@ -110,7 +171,7 @@ app.post("/login", async (c) => {
   const userId = body?.userId;
   const pin = body?.pin;
   if (typeof userId !== "number" || typeof pin !== "string" || pin.length < 4) {
-    return c.json({ error: "유저와 PIN 번호를 입력해 주세요." }, 400);
+    return c.json({ error: "유저와 PIN 번호를 입력해 주십시오." }, 400);
   }
   const user = await c.env.DB.prepare("SELECT * FROM users WHERE id = ?1")
     .bind(userId)
@@ -185,7 +246,7 @@ app.post("/setup", requireAuth, async (c) => {
     const sw = parseWeight(body?.startWeight);
     const gw = parseWeight(body?.goalWeight);
     if (sw == null || gw == null) {
-      return c.json({ error: "몸무게는 20~300kg 사이 숫자로 입력해 주세요." }, 400);
+      return c.json({ error: "몸무게는 20~300kg 사이 숫자로 입력해 주십시오." }, 400);
     }
     startWeight = sw;
     goalWeight = gw;
@@ -258,7 +319,7 @@ app.post("/users", requireAdmin, async (c) => {
   const body = await c.req.json<{ name?: string }>().catch(() => null);
   const name = body?.name?.trim();
   if (!name || name.length > 20) {
-    return c.json({ error: "이름은 1~20자로 입력해 주세요." }, 400);
+    return c.json({ error: "이름은 1~20자로 입력해 주십시오." }, 400);
   }
   const exists = await c.env.DB.prepare("SELECT id FROM users WHERE name = ?1")
     .bind(name)
@@ -393,7 +454,7 @@ app.post("/weights", requireAuth, async (c) => {
   if (!isValidDate(date)) return c.json({ error: "날짜 형식이 올바르지 않습니다." }, 400);
   if (date > todayKST()) return c.json({ error: "미래 날짜는 기록할 수 없습니다." }, 400);
   if (weight == null) {
-    return c.json({ error: "몸무게는 20~300kg 사이 숫자로 입력해 주세요." }, 400);
+    return c.json({ error: "몸무게는 20~300kg 사이 숫자로 입력해 주십시오." }, 400);
   }
 
   const existing = await c.env.DB.prepare(
@@ -402,8 +463,12 @@ app.post("/weights", requireAuth, async (c) => {
     .bind(user.id, date)
     .first<{ weight: number }>();
 
+  if (existing?.weight === weight) return c.json({ ok: true, changed: false });
+
+  const lossViolation = await checkLossRate(c, user.id, date, weight);
+  if (lossViolation) return c.json({ error: lossViolation }, 400);
+
   if (existing) {
-    if (existing.weight === weight) return c.json({ ok: true, changed: false });
     await c.env.DB.batch([
       c.env.DB.prepare(
         `UPDATE weights SET weight = ?1,
@@ -460,7 +525,7 @@ app.post("/users/:id/comments", requireAuth, async (c) => {
   const content = body?.content?.trim();
 
   if (!content || content.length > 500) {
-    return c.json({ error: "멘트는 1~500자로 입력해 주세요." }, 400);
+    return c.json({ error: "멘트는 1~500자로 입력해 주십시오." }, 400);
   }
   const target = await c.env.DB.prepare("SELECT id FROM users WHERE id = ?1")
     .bind(toId)

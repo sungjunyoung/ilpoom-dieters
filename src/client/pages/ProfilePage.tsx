@@ -56,7 +56,7 @@ export default function ProfilePage() {
   };
 
   const onDelete = async (d: string) => {
-    if (!window.confirm(`${d} 기록을 삭제할까요? 삭제 내역이 남습니다.`)) return;
+    if (!window.confirm(`${d} 기록을 삭제하시겠습니까? 삭제 내역이 남습니다.`)) return;
     try {
       await api.deleteWeight(d);
       load();
@@ -70,7 +70,7 @@ export default function ProfilePage() {
     if (input == null) return;
     const value = parseFloat(input);
     if (!Number.isFinite(value)) {
-      window.alert("숫자로 입력해 주세요.");
+      window.alert("숫자로 입력해 주십시오.");
       return;
     }
     try {
@@ -98,7 +98,7 @@ export default function ProfilePage() {
   };
 
   if (notFound) return <p className="muted">유저를 찾을 수 없습니다.</p>;
-  if (!profile) return <div className="page-loading">불러오는 중…</div>;
+  if (!profile) return <div className="page-loading">불러오는 중</div>;
 
   const { user, weights, revisions, comments } = profile;
   const delta =
@@ -106,6 +106,9 @@ export default function ProfilePage() {
       ? user.currentWeight - user.startWeight
       : null;
   const sortedDesc = [...weights].reverse();
+  // 운영 수칙 1번: 목표 체중은 미만 기준으로 적용한다
+  const achieved =
+    user.goalWeight != null && user.currentWeight != null && user.currentWeight < user.goalWeight;
 
   return (
     <div className="profile">
@@ -113,6 +116,7 @@ export default function ProfilePage() {
         <h2>
           {user.name}
           {isMine && <span className="badge badge-me">나</span>}
+          {achieved && <span className="badge badge-done">목표 달성</span>}
         </h2>
         <div className="stat-row">
           <div className="stat">
@@ -175,7 +179,10 @@ export default function ProfilePage() {
             </button>
           </div>
           {recordError && <p className="error small">{recordError}</p>}
-          <p className="muted small">같은 날짜에 다시 저장하면 수정되고, 수정 내역이 남아요.</p>
+          <p className="muted small">
+            같은 날짜에 다시 저장하면 수정되며, 수정 내역이 남습니다. 하루 1kg을 초과하는 감량은
+            기록할 수 없습니다.
+          </p>
         </form>
       )}
 
@@ -237,13 +244,13 @@ export default function ProfilePage() {
       )}
 
       <div className="card">
-        <h3>응원 멘트</h3>
+        <h3>멘트</h3>
         <form className="comment-form" onSubmit={onComment}>
           <input
             className="input"
             type="text"
             maxLength={500}
-            placeholder={isMine ? "나에게 다짐 한마디" : `${user.name}님에게 응원 한마디`}
+            placeholder={isMine ? "나에게 한마디" : `${user.name}님에게 한마디`}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             required
@@ -258,12 +265,12 @@ export default function ProfilePage() {
             <div className="feed-item" key={c.id}>
               <div className="feed-meta">
                 <b>{c.fromName}</b> → {c.toName}
-                <span className="muted small"> · {formatDateTime(c.createdAt)}</span>
+                <span className="muted"> · {formatDateTime(c.createdAt)}</span>
               </div>
               <div className="feed-content">{c.content}</div>
             </div>
           ))}
-          {comments.length === 0 && <p className="muted small">첫 멘트를 남겨보세요!</p>}
+          {comments.length === 0 && <p className="muted small">아직 멘트가 없습니다.</p>}
         </div>
       </div>
     </div>

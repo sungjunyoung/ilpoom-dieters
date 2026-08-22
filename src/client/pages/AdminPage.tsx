@@ -29,7 +29,7 @@ export default function AdminPage() {
     setMessage("");
     try {
       const created = await api.createUser(name.trim());
-      setMessage(`${created.name}님 등록 완료! 초기 PIN은 ${created.initialPin} 입니다.`);
+      setMessage(`${created.name}님을 등록했습니다. 초기 PIN은 ${created.initialPin}입니다.`);
       setName("");
       load();
     } catch (err) {
@@ -40,7 +40,7 @@ export default function AdminPage() {
   };
 
   const onResetPin = async (m: MemberSummary) => {
-    if (!window.confirm(`${m.name}님의 PIN을 ${INITIAL_PIN}으로 초기화할까요?`)) return;
+    if (!window.confirm(`${m.name}님의 PIN을 ${INITIAL_PIN}으로 초기화하시겠습니까?`)) return;
     try {
       await api.resetPin(m.id);
       setMessage(`${m.name}님의 PIN을 ${INITIAL_PIN}으로 초기화했습니다.`);
@@ -67,7 +67,9 @@ export default function AdminPage() {
             등록
           </button>
         </div>
-        <p className="muted small">등록된 멤버는 초기 PIN {INITIAL_PIN}으로 로그인합니다.</p>
+        <p className="muted small">
+          등록된 멤버는 초기 PIN {INITIAL_PIN}으로 로그인한 뒤 PIN을 재설정합니다.
+        </p>
         {message && <p className="success small">{message}</p>}
         {error && <p className="error small">{error}</p>}
       </form>
