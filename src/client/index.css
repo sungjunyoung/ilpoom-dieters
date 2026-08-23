@@ -569,11 +569,14 @@ input {
   font-weight: 600;
 }
 
+.progress-block {
+  margin-top: var(--space-3);
+}
+
 .progress {
   height: 8px;
   background: var(--grey-200);
   border-radius: var(--radius-full);
-  margin-top: var(--space-3);
   overflow: hidden;
 }
 
@@ -582,6 +585,21 @@ input {
   background: linear-gradient(90deg, #6aa8f8, var(--blue-500));
   border-radius: var(--radius-full);
   transition: width var(--dur-slow) var(--ease);
+}
+
+/* 시작 몸무게보다 늘어난 구간 — 진행이 아니라는 것이 색으로 먼저 읽혀야 한다 */
+.progress-bar.is-over {
+  background: linear-gradient(90deg, #f78b95, var(--red-500));
+}
+
+.progress-label {
+  margin-top: var(--space-2);
+  font-size: var(--fs-caption);
+  color: var(--fg-secondary);
+}
+
+.progress-label.is-over {
+  color: var(--fg-danger);
 }
 
 /* ---------- feed / comments ---------- */
